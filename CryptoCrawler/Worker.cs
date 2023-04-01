@@ -29,7 +29,8 @@ namespace CryptoCrawler
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            while(!cancellationToken.IsCancellationRequested)
+            bool failure = false;
+            while(!cancellationToken.IsCancellationRequested && !failure)
             {
                 try
                 {
@@ -38,6 +39,7 @@ namespace CryptoCrawler
                 catch(Exception ex)
                 {
                     _logger.LogError(ex, nameof(ExecuteAsync));
+                    failure = true;
                 }
             }
         }
@@ -46,7 +48,7 @@ namespace CryptoCrawler
         {
             while(!cancellationToken.IsCancellationRequested)
             {
-                await Task.Delay((int)_scrapeInterval.TotalMilliseconds, cancellationToken);
+                await Task.Delay((int)_scrapeInterval.Milliseconds, cancellationToken);
                 IEnumerable<Cryptocurrency> cryptocurrencies = CollectionToCryptocurrency.CreateCryptocurrencies(_cryptoScraper.WebScraper()).OrderBy(x => x.Rank);
                 if(!(await _updateSql.Get()).Any()) 
                 {
