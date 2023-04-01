@@ -23,6 +23,21 @@ namespace CryptoCrawler.Services
             _configuration = configuration;
         }
 
+        public async Task<IEnumerable<Cryptocurrency>> Get()
+        {
+            string connectionString = _configuration.GetConnectionString("CryptoScraperDb") ?? string.Empty;
+            using IDbConnection connection = _dbConnectionFactory.CreateConnection(connectionString);
+            try
+            {    
+                return await _dapperWrapperService.QueryAsync<Cryptocurrency>(connection, "GetCryptocurrency", param: null, commandType: CommandType.StoredProcedure);                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "{MethodName}", nameof(Get));
+            }
+            return Enumerable.Empty<Cryptocurrency>();
+        }
+
         public async Task Add(IEnumerable<Cryptocurrency> cryptocurrencies)
         {
             string connectionString = _configuration.GetConnectionString("CryptoScraperDb") ?? string.Empty;
