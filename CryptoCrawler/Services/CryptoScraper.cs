@@ -42,11 +42,8 @@ namespace CryptoCrawler.Services
 
         private ChromeDriver CreateDriver()
         {
-            //ChromeOptions options = new()
-            //{
-            //    BinaryLocation = @"C:\Program Files\Google\Chrome\Application\chrome.exe"
-            //};
-            //options.AddArgument(LookUps.SeleniumWebDriverOptions.Headless.Description());
+            ChromeOptions options = new();
+            options.AddArgument(LookUps.SeleniumWebDriverOptions.Headless.Description());
             return new ChromeDriver();
         }
 
