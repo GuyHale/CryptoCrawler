@@ -22,13 +22,14 @@ namespace CryptoCrawler.Services
             _logger = logger;
             _configuration = configuration;
         }
+
         public async Task<IEnumerable<Cryptocurrency>> Get()
         {
             string connectionString = _configuration.GetConnectionString("CryptoScraperDb") ?? string.Empty;
             using IDbConnection connection = _dbConnectionFactory.CreateConnection(connectionString);
             try
-            {
-                return await _dapperWrapperService.QueryAsync<Cryptocurrency>(connection, "GetCryptocurrencies", CommandType.StoredProcedure);
+            {    
+                return await _dapperWrapperService.QueryAsync<Cryptocurrency>(connection, "GetCryptocurrencies", param: null, commandType: CommandType.StoredProcedure);                
             }
             catch (Exception ex)
             {
@@ -73,10 +74,11 @@ namespace CryptoCrawler.Services
                     DynamicParameters parameters = new();
                     parameters.Add("_rank", cryptocurrency.Rank, DbType.Int16);
                     parameters.Add("_name", cryptocurrency.Name, DbType.String);
-                    parameters.Add("_coin_value", cryptocurrency.USDValuation, DbType.String);
-                    parameters.Add("_market_cap", cryptocurrency.MarketCap, DbType.String);
+                    parameters.Add("_USDValuation", cryptocurrency.USDValuation, DbType.String);
+                    parameters.Add("_marketCap", cryptocurrency.MarketCap, DbType.String);
                     parameters.Add("_description", cryptocurrency.Description ?? string.Empty, DbType.String);
-                    await _dapperWrapperService.QuerySinglOrDefaultAsync<Cryptocurrency>(connection, "UpdateCryptocurrency", parameters, commandType: CommandType.StoredProcedure);
+                    parameters.Add("_abbreviation", cryptocurrency.Abbreviation ?? string.Empty, DbType.String);
+                    await _dapperWrapperService.QuerySinglOrDefaultAsync<Cryptocurrency>(connection, "UpdateCryptocurrencies", parameters, commandType: CommandType.StoredProcedure);
                 }
             }
             catch (Exception ex)
