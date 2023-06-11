@@ -15,6 +15,8 @@ IHost host = Host.CreateDefaultBuilder(args)
         .AddSingleton<ICryptoScraper, CryptoScraper>()
         .AddSingleton<IUpdateSql, UpdateSqlService>()
         .AddSingleton<IDbConnectionFactory, SqlConnectionFactory>()
+        .AddSingleton<IAmazonDynamoClient, AmazonDynamoClient>()
+        .AddSingleton<IDynamoDb, DynamoDbService>()
         .AddHostedService<Worker>();
 
     }).Build();
