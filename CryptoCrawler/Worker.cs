@@ -44,8 +44,17 @@ namespace CryptoCrawler
             while(!cancellationToken.IsCancellationRequested)
             {
                 await Task.Delay((int)_scrapeInterval.Milliseconds, cancellationToken);
-                IEnumerable<Cryptocurrency> cryptocurrencies = CollectionToCryptocurrency.CreateCryptocurrencies(_cryptoScraper.WebScraper()).OrderBy(x => x.Rank);
-                await _dynamoDb.Add(cryptocurrencies, cancellationToken);
+                //IEnumerable<Cryptocurrency> cryptocurrencies = CollectionToCryptocurrency.CreateCryptocurrencies(_cryptoScraper.WebScraper()).OrderBy(x => x.Rank);
+                Cryptocurrency cryptocurrency = new()
+                {
+                    Rank = 1,
+                    Name = "Bitcoin",
+                    Abbreviation = "Btc",
+                    USDValuation = "$1",
+                    MarketCap = "$1",
+                    Description = "b"
+                };
+                await _dynamoDb.Add(new List<Cryptocurrency>() { cryptocurrency}.AsEnumerable(), cancellationToken);
             }
         }
     }
