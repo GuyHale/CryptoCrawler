@@ -9,6 +9,6 @@ namespace CryptoCrawler.Interfaces
 {
     public interface IDynamoDb
     {
-        Task Add(IEnumerable<Cryptocurrency> cryptocurrencies);
+        Task Add(IEnumerable<Cryptocurrency> cryptocurrencies, CancellationToken ct);
     }
 }

@@ -1,4 +1,6 @@
-﻿using CryptoCrawler;
+﻿using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
+using CryptoCrawler;
 using CryptoCrawler.Interfaces;
 using CryptoCrawler.Services;
 using Microsoft.AspNet.SignalR.Hosting;
@@ -15,8 +17,9 @@ IHost host = Host.CreateDefaultBuilder(args)
         .AddSingleton<ICryptoScraper, CryptoScraper>()
         .AddSingleton<IUpdateSql, UpdateSqlService>()
         .AddSingleton<IDbConnectionFactory, SqlConnectionFactory>()
-        .AddSingleton<IAmazonDynamoClient, AmazonDynamoClient>()
         .AddSingleton<IDynamoDb, DynamoDbService>()
+        .AddAWSService<IAmazonDynamoDB>()
+        .AddScoped<IDynamoDBContext, DynamoDBContext>()
         .AddHostedService<Worker>();
 
     }).Build();

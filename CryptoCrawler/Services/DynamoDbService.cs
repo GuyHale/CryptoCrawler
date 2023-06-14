@@ -1,4 +1,6 @@
 ﻿using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
+using CryptoCrawler.Helpers;
 using CryptoCrawler.Interfaces;
 using CryptoCrawler.Models;
 using Microsoft.Extensions.Logging;
@@ -12,19 +14,26 @@ namespace CryptoCrawler.Services
 {
     public class DynamoDbService : IDynamoDb
     {
-        private readonly IAmazonDynamoClient _amazonDynamoClient;
+        private readonly IDynamoDBContext _dynamoDBContext;
         private readonly ILogger<DynamoDbService> _logger;
 
-        public DynamoDbService(IAmazonDynamoClient amazonDynamoClient, ILogger<DynamoDbService> logger)
+        public DynamoDbService(IDynamoDBContext dynamoDBContext, ILogger<DynamoDbService> logger)
         {
-            _amazonDynamoClient = amazonDynamoClient;
+            _dynamoDBContext = dynamoDBContext;
             _logger = logger;
         }
 
-        public async Task Add(IEnumerable<Cryptocurrency> cryptocurrencies)
+        public async Task Add(IEnumerable<Cryptocurrency> cryptocurrencies, CancellationToken ct)
         {
-            AmazonDynamoDBClient amazonDynamoDBClient = _amazonDynamoClient.CreateClient();
-            await Task.Delay(1);
+            try
+            {
+                await _dynamoDBContext.SaveManyAsync(cryptocurrencies, ct);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "MethodName", System.Reflection.MethodBase.GetCurrentMethod()?.Name);
+                throw new Exception(ex.Message);
+            }
         }
     }
 }
